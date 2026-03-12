@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mdreview.dev — Google Docs-style comments for markdown, built for AI revision</title>
+    <meta name="description" content="Review your markdown, comment like Google Docs, and generate prompts for your favorite LLM. Open any markdown file, leave inline comments, and turn them into a ready-to-paste prompt for ChatGPT, Claude, or any AI you use." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 class="logo">mdreview<span class="logo-dot">.dev</span></h1>
+        </div>
+        <span class="filename" id="filename"></span>
+        <div class="topbar-right">
+          <button class="btn btn-ghost" id="btn-open" title="Open file">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span class="btn-label">Open .md</span>
+          </button>
+          <button class="btn btn-ghost btn-comments-toggle" id="btn-comments-toggle" title="Toggle comments">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span class="comments-badge" id="comments-badge"></span>
+          </button>
+          <button class="btn btn-primary" id="btn-generate" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <span class="btn-label">Generate Prompt</span>
+          </button>
+          <input type="file" id="file-input" accept=".md,.markdown,.txt" hidden />
+        </div>
+      </header>
+
+      <!-- Upload Screen -->
+      <div class="screen screen-upload active" id="screen-upload">
+        <div class="upload-area" id="upload-area">
+          <div class="upload-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+          </div>
+          <h2 class="upload-title">Review your markdown, comment like Google Docs, and generate prompts for your favorite LLM.</h2>
+          <p class="upload-subtitle">Drop your file here or click to browse</p>
+          <p class="upload-hint">.md, .markdown, .txt</p>
+        </div>
+      </div>
+
+      <!-- Review Screen -->
+      <div class="screen screen-review" id="screen-review">
+        <div class="review-layout">
+          <main class="document-pane" id="document-pane">
+            <article class="markdown-body" id="markdown-body"></article>
+
+            <!-- Comment Popover (shown on text selection) -->
+            <div class="comment-popover" id="comment-popover">
+              <button class="popover-btn" id="popover-add-comment">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="12" y1="8" x2="12" y2="14"/><line x1="9" y1="11" x2="15" y2="11"/></svg>
+                Comment
+              </button>
+            </div>
+
+            <!-- Comment Input Popover -->
+            <div class="comment-input-popover" id="comment-input-popover">
+              <div class="comment-input-quote" id="comment-input-quote"></div>
+              <textarea
+                class="comment-textarea"
+                id="comment-textarea"
+                placeholder="Add your comment..."
+                rows="3"
+              ></textarea>
+              <div class="comment-input-actions">
+                <button class="btn btn-ghost btn-sm" id="comment-cancel">Cancel</button>
+                <button class="btn btn-primary btn-sm" id="comment-submit">Add</button>
+              </div>
+            </div>
+          </main>
+          <div class="comments-overlay" id="comments-overlay"></div>
+          <aside class="comments-pane" id="comments-pane">
+            <div class="comments-header">
+              <h2 class="comments-title">Comments</h2>
+              <span class="comments-count" id="comments-count">0</span>
+            </div>
+            <div class="comments-list" id="comments-list">
+              <div class="comments-empty" id="comments-empty">
+                <p>Select text in the document to add a comment.</p>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <!-- Prompt Modal -->
+      <div class="modal-overlay" id="prompt-modal">
+        <div class="modal">
+          <div class="modal-header">
+            <h2 class="modal-title">Generated Prompt</h2>
+            <button class="modal-close" id="modal-close">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="modal-body">
+            <textarea class="prompt-editor" id="prompt-editor"></textarea>
+          </div>
+          <div class="modal-footer">
+            <span class="copy-feedback" id="copy-feedback">Copied!</span>
+            <button class="btn btn-ghost" id="btn-back-to-review">Back to Review</button>
+            <button class="btn btn-primary" id="btn-copy">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy to Clipboard
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
