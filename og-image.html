@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@500;700&family=DM+Sans:wght@400;500;600&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1200px;
+      height: 630px;
+      overflow: hidden;
+      font-family: 'DM Sans', sans-serif;
+      background: #F7F3EB;
+      display: flex;
+      position: relative;
+    }
+
+    /* Subtle ruled lines like the app */
+    body::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        transparent,
+        transparent 31px,
+        rgba(0,0,0,0.025) 31px,
+        rgba(0,0,0,0.025) 32px
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 72px 80px;
+      flex: 1;
+    }
+
+    .logo {
+      font-family: 'Crimson Pro', serif;
+      font-size: 42px;
+      font-weight: 700;
+      color: #1A1612;
+      margin-bottom: 36px;
+      letter-spacing: -0.02em;
+    }
+
+    .logo span {
+      color: #C23B22;
+    }
+
+    .tagline {
+      font-family: 'Crimson Pro', serif;
+      font-size: 52px;
+      font-weight: 700;
+      color: #1A1612;
+      line-height: 1.25;
+      letter-spacing: -0.025em;
+      max-width: 620px;
+      margin-bottom: 32px;
+    }
+
+    .subtitle {
+      font-size: 22px;
+      color: #4A4540;
+      line-height: 1.6;
+      max-width: 540px;
+      font-weight: 400;
+    }
+
+    /* Right side: fake app preview */
+    .preview {
+      width: 420px;
+      min-width: 420px;
+      display: flex;
+      flex-direction: column;
+      padding: 60px 48px 60px 0;
+      gap: 16px;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .comment-card {
+      background: #FDFBF7;
+      border: 1px solid #DDD6CB;
+      border-radius: 8px;
+      padding: 18px 20px;
+      box-shadow: 0 2px 8px rgba(26,22,18,0.06);
+    }
+
+    .comment-card.highlighted {
+      border-color: #C23B22;
+      box-shadow: 0 2px 12px rgba(194,59,34,0.1);
+    }
+
+    .comment-quote {
+      font-family: 'Crimson Pro', serif;
+      font-size: 14px;
+      font-style: italic;
+      color: #8A8480;
+      padding-left: 12px;
+      border-left: 2px solid #C23B22;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .comment-line {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #C23B22;
+      background: rgba(194,59,34,0.08);
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      display: inline-block;
+    }
+
+    .comment-text {
+      font-size: 14px;
+      color: #1A1612;
+      line-height: 1.5;
+    }
+
+    .steps {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .step {
+      font-size: 13px;
+      font-weight: 600;
+      color: #FDFBF7;
+      background: #1A1612;
+      padding: 6px 14px;
+      border-radius: 4px;
+      letter-spacing: 0.01em;
+    }
+
+    .step.red {
+      background: #C23B22;
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <div class="logo">mdreview<span>.dev</span></div>
+    <div class="tagline">Comment on markdown. Prompt your AI.</div>
+    <div class="subtitle">Google Docs-style inline comments for markdown files — generate prompts for ChatGPT, Claude, or any LLM.</div>
+    <div class="steps">
+      <span class="step">Open .md</span>
+      <span class="step">Comment</span>
+      <span class="step red">Generate Prompt</span>
+      <span class="step">Paste to LLM</span>
+    </div>
+  </div>
+  <div class="preview">
+    <div class="comment-card highlighted">
+      <div class="comment-line">L12</div>
+      <div class="comment-quote">"The backend is a lightweight Node.js proxy server"</div>
+      <div class="comment-text">Consider using edge functions instead — lower latency and no server to manage.</div>
+    </div>
+    <div class="comment-card">
+      <div class="comment-line">L24</div>
+      <div class="comment-quote">"Browser geolocation can be unreliable"</div>
+      <div class="comment-text">Add IP-based fallback as a default when permission is denied.</div>
+    </div>
+    <div class="comment-card">
+      <div class="comment-line">L8</div>
+      <div class="comment-quote">"Support severe weather alerts"</div>
+      <div class="comment-text">Clarify: push notifications or in-app banners?</div>
+    </div>
+  </div>
+</body>
+</html>
