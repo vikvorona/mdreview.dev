@@ -334,9 +334,14 @@ function handleSelectionChange(e) {
   state.pendingPaneRect = paneRect;
   state.pendingScrollY = scrollY;
 
-  positionPopover(popover, rect, paneRect, scrollY, 40);
-  popover.classList.add('visible');
-  inputPopover.classList.remove('visible');
+  // Show input popover directly without intermediate Comment button
+  const quote = state.pendingSelection.text;
+  inputQuote.textContent = quote.length > 80 ? quote.slice(0, 80) + '...' : quote;
+  positionPopover(inputPopover, rect, paneRect, scrollY, 180);
+  inputPopover.classList.add('visible');
+  inputTextarea.value = '';
+  inputTextarea.focus();
+  popover.classList.remove('visible');
 }
 
 function positionPopover(el, selRect, paneRect, scrollY, elHeight) {
